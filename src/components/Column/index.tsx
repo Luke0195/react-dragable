@@ -1,77 +1,78 @@
-import React from "react";
-import Card from "../Card";
-
 import { Flex, Text } from "@chakra-ui/react";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import { isEmpty } from "lodash";
+import React from "react";
+import { Draggable } from "react-beautiful-dnd";
+import { Droppable } from "react-beautiful-dnd";
 
-const Column = ({ column, tasks }: any) => {
+const Column = ({ tasks, placeholderProps }: any) => {
   return (
     <Flex
-      rounded={"3px"}
+      rounded="3px"
       bg="column-bg"
-      w="400px"
-      h="620px"
+      w="500px"
+      h="610px"
       flexDir="column"
-      mr="1.5rem"
-      ml="1.5rem
-      "
+      position="relative"
     >
-      <Flex
-        align="center"
-        h="60px"
-        bg="column-header-bg"
-        rounded="3px 3px 0 0"
-        px="1.5rem"
-        mb="1.5rem"
-      >
-        <Text
-          fontSize="17px"
-          align={"center"}
-          justifyContent={"center"}
-          fontWeight={600}
-          color="subtle-text"
-        >
-          {" "}
-          {column.title}
-        </Text>
-      </Flex>
-      <Droppable droppableId={column.id}>
-        {(droppableProvided, dropplableSnapshot) => (
+      <Droppable droppableId="col">
+        {(droppableProvided) => (
           <Flex
-            px="1.5rem"
+            p="1.5rem"
             flex={1}
             flexDir="column"
-            bg="red"
-            ref={droppableProvided.innerRef}
             {...droppableProvided.droppableProps}
+            ref={droppableProvided.innerRef}
           >
-            {tasks.map((item: any, index: number) => {
-              console.log(item);
-              return (
-                <Draggable
-                  key={item.id}
-                  draggableId={`${item.id}`}
-                  index={item.id}
-                >
-                  {(draggableProvided, draggablesnapShot) => (
-                    <Flex
-                      key={item.id}
-                      mb="1rem"
-                      height={"30px"}
-                      bg="card-bg"
-                      rounded="8px"
-                      p="1.5rem"
-                      align={"center"}
-                      ref={draggableProvided.innerRef}
-                      {...draggableProvided.dragHandleProps}
-                      {...draggableProvided.draggableProps}
-                    >
-                      <Text fontSize={"1.2rem"}> {item.content}</Text>
-                    </Flex>
-                  )}
-                </Draggable>
-              );
-            })}
+            {tasks.map((task: any, index: number) => (
+              <Draggable
+                key={task.id}
+                draggableId={task.id.toString()}
+                index={index}
+              >
+                {(draggableProvided, draggableSnapshot) => (
+                  <Flex
+                    mb="1rem"
+                    h="100px"
+                    bg="card-bg"
+                    rounded="3px"
+                    p="1.5rem"
+                    _active={{ bg: "#23252F" }}
+                    outline="2px solid"
+                    outlineColor={
+                      draggableSnapshot.isDragging
+                        ? "card-border"
+                        : "transparent"
+                    }
+                    boxShadow={
+                      draggableSnapshot.isDragging
+                        ? "0 5px 10px rgba(0, 0, 0, 0.6)"
+                        : "unset"
+                    }
+                    align="center"
+                    zIndex={1}
+                    {...draggableProvided.dragHandleProps}
+                    {...draggableProvided.draggableProps}
+                    ref={draggableProvided.innerRef}
+                  >
+                    <Text fontSize="20px">{task.content}</Text>
+                  </Flex>
+                )}
+              </Draggable>
+            ))}
+            {droppableProvided.placeholder}
+            {!isEmpty(placeholderProps) && (
+              <Flex
+                position="absolute"
+                top={`${placeholderProps.clientY}px`}
+                rounded="3px"
+                opacity={0.6}
+                borderWidth={2}
+                borderStyle="dashed"
+                borderColor="card-border"
+                height={`${placeholderProps.clientHeight}px`}
+                width={`${placeholderProps.clientWidth}px`}
+              />
+            )}
           </Flex>
         )}
       </Droppable>
